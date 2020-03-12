@@ -3,6 +3,7 @@ import bitarray
 import sys
 import re
 import math
+import argparse
 
 from utils import get_model, encode_context
 
@@ -11,15 +12,15 @@ from block_baseline import get_bins, encode_block, decode_block
 from huffman_baseline import encode_huffman, decode_huffman
 from sample import sample
 
-def main():
-    enc, model = get_model(model_name='gpt2')
+def main(args):
+    enc, model = get_model(model_name=args.lm)
 
     
     ## PARAMETERS
-    message_str = "This is a very secret message!"
+    message_str = (args.message if args.message != "" else "This is a very secret message!")
 
     unicode_enc = False
-    mode = 'arithmetic'
+    mode = args.mode
     block_size = 3 # for huffman and bins
     temp = 0.9 # for arithmetic
     precision = 26 # for arithmetic
@@ -34,7 +35,7 @@ def main():
     if mode == 'bins':
         bin2words, words2bin = get_bins(len(enc.encoder), block_size)
 
-    context = \
+    context = args.context if args.context != "" else \
 """Washington received his initial military training and command with the Virginia Regiment during the French and Indian War. He was later elected to the Virginia House of Burgesses and was named a delegate to the Continental Congress, where he was appointed Commanding General of the nation's Continental Army. Washington led American forces, allied with France, in the defeat of the British at Yorktown. Once victory for the United States was in hand in 1783, Washington resigned his commission.
 
 
@@ -98,4 +99,10 @@ def main():
         print(reconst)
 
 if __name__ == '__main__':
-    main()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-mode", type=str, default="arithmetic", choices=["bins", "huffman", "arithmetic", "sample"])
+    parser.add_argument("-context", type=str, default="", help="your secret message, use a double-quotes if necessary")
+    parser.add_argument("-message", type=str, default="", help="your secret message, use a double-quotes if necessary")
+    parser.add_argument("-lm", type=str, default="gpt2")
+    args = parser.parse_args()
+    main(args)

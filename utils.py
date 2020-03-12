@@ -2,7 +2,7 @@ import torch
 import numpy as np
 import bitarray
 
-from pytorch_transformers import GPT2LMHeadModel, GPT2Tokenizer
+from transformers import GPT2LMHeadModel, GPT2Tokenizer
 
 def decode(self, token_ids, **kwargs):
     filtered_tokens = self.convert_ids_to_tokens(token_ids)
